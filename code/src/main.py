@@ -224,13 +224,18 @@ class ProjDirMaker:
                 if(not os.path.exists(new_dir_path)):
                     try:
                         os.mkdir(new_dir_path)
-                        message = indent + "Directory \"";
+                        message = indent + "Directory \""
                         message += os.path.basename(new_dir_path)
-                        message += "\" created\n"
+                        message += "/\" created\n"
                         sys.stdout.write(message)
                     except:
                         print(sys.exc.info())
                         sys.exit("Cannot create subdirectories!")
+                else:
+                    message = indent + "Directory \""
+                    message += os.path.basename(new_dir_path)
+                    message += "/\" already exists\n"
+                    sys.stdout.write(message)
                 self.__populate(new_dir_path, dir_struct[json_key], level + 1)
             elif(type(dir_struct[json_key]) == type(list())):
                 # These are the files to create.
@@ -241,9 +246,8 @@ class ProjDirMaker:
                         if(os.path.exists(new_file_path)):
                         # File already exists, so leave it alone.
                             message = indent + "File \"" + new_file
-                            massage += "\" already exists\n"
+                            message += "\" already exists (no overwrite)\n"
                             sys.stdout.write(message)
-                            continue
                         elif(new_file in self.selections):
                         # File is new and has a template.
                             if(self.selections[new_file] != "NO_TEMPLATE"):
@@ -268,7 +272,8 @@ class ProjDirMaker:
                                 sys.stdout.write(message)
                             except:
                                 print(sys.exc_info())
-                                sys.exit("bugs")
+                                sys.exit(
+                                    "Cannot create " + new_file + " stopping")
 
 # Main script ######################################################
 
@@ -280,9 +285,5 @@ if __name__ == "__main__":
     proj_maker = ProjDirMaker(mpd_resdir)
     proj_maker.set_selections()
     proj_name = proj_maker.query_proj_name()
-    if(proj_maker.proj_dir_exists(proj_name)):
-        print("Project directory already exists!")
-        sys.exit("Directory creation/population failed!")
-    else:
-        proj_maker.create(proj_name)
+    proj_maker.create(proj_name)
 
