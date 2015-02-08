@@ -94,7 +94,8 @@ class ProjDirMaker:
         User is queried about which template files are to be used and
         these are stored as paths in the self.selections member
         variable referenced versus their file keys set in the
-        FILE_KEYS object of the json file.
+        FILE_KEYS object of the json file. If user skips a template
+        the key "NO_TEMPLATE" is used.
         """
         self.selections = {}
         for temp_dir in self.temp_dirs:
@@ -243,8 +244,9 @@ class ProjDirMaker:
                         elif(new_file in self.selections):
                         # File is new and has a template.
                             if(self.selections[new_file] != "NO_TEMPLATE"):
-                                shutil.copy(self.selections[new_file],
-                                            cur_dir_path)
+                                shutil.copy(
+                                    self.selections[new_file],
+                                    os.path.join(cur_dir_path, new_file))
                                 message = "    File \"" + new_file
                                 message += "\" created from template "
                                 message += os.path.basename(
