@@ -108,7 +108,11 @@ class ProjDirMaker:
                 selection, valid = self.__query_selection(num_files)
                 if(not valid or selection < 0):
                     sys.exit("No project built.")
+                elif(selection == 0):
+                    self.selections[
+                        self.file_keys[temp_dir]] = "NO_TEMPLATE"
                 else:
+                    selection -= 1
                     self.selections[
                         self.file_keys[temp_dir]] =\
                             os.path.join(temp_path, temp_files[selection])
@@ -129,6 +133,7 @@ class ProjDirMaker:
                 print(sys.exc_info())
                 sys.exit("Cannot create project directory!")
         proj_path = os.path.join(os.getcwd(), proj_name)
+        sys.stdout.write("******\n")
         self.__populate(proj_path, self.dir_struct)
 
     def __disp_menu(self, temp_file_list, temp_dir):
@@ -147,7 +152,8 @@ class ProjDirMaker:
         sys.stdout.write(header_str)
         for i, n in enumerate(temp_file_list):
             sys.stdout.write("    " + str(i + 1) + ": " + n + "\n")
-        sys.stdout.write("    0: quit\n")
+        sys.stdout.write("    0: Do not create this template\n")
+        sys.stdout.write("    q: Quit\n")
         sys.stdout.flush()
 
     def __query_selection(self, max_selection):
@@ -170,7 +176,14 @@ class ProjDirMaker:
         selection_valid = False
         while(attempt < 3):
             try:
-                selection = int(input("Selection: "))
+                response = input("Selection: ")
+                selection = 0
+                if(response != "q"):
+                    selection = int(response)
+                else:
+                    selection_valid = True
+                    selection = -1
+                    break
                 if(selection > max_selection or selection < 0):
                     sys.stderr.write("Invalid selection\n")
                     attempt += 1
@@ -180,11 +193,7 @@ class ProjDirMaker:
             except ValueError:
                 sys.stderr.write("Invalid selection\n")
                 attempt += 1
-        # Selecting 0 means user wants to exit.
-        if(selection_valid and (selection == 0)):
-            selection_valid = False
-        # Subtract 1 so that the indices are correct.
-        return selection - 1, selection_valid
+        return selection, selection_valid
 
     def __populate(self, cur_dir_path, dir_struct):
         """Populate a directory according to a directory layout.
@@ -232,15 +241,19 @@ class ProjDirMaker:
                             sys.stdout.write(message)
                             continue
                         elif(new_file in self.selections):
-                            # File is new and has a template.
-                            shutil.copy(self.selections[new_file],
-                                        cur_dir_path)
-                            message = "    File \"" + new_file
-                            message += "\" created from template "
-                            message += os.path.basename(
-                                           self.selections[new_file])
-                            message += "\n"
-                            sys.stdout.write(message)
+                        # File is new and has a template.
+                            if(self.selections[new_file] != "NO_TEMPLATE"):
+                                shutil.copy(self.selections[new_file],
+                                            cur_dir_path)
+                                message = "    File \"" + new_file
+                                message += "\" created from template "
+                                message += os.path.basename(
+                                               self.selections[new_file])
+                                message += "\n"
+                                sys.stdout.write(message)
+                            else:
+                            # No template should be created.
+                                continue
                         else:
                         # Create a new empty file.
                             try:
