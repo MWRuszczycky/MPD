@@ -10,18 +10,18 @@ MPD_RESDIR_FROM_HOME = "/Documents/computing/python/projects/MPD/code/test/LaTeX
 ####################################################################
 
 class ProjDirMaker:
-    """Generates a project directory based on set of templates.
+    """Generates a project directory based on a set of templates.
 
     The path to a directory containing the template subdirectories
     is set during object initialization. The resource directory
     must also contain a single file with the json describing the
-    directory layout. The object can the be used to query the user
+    directory layout. The object can then be used to query the user
     for which template to use from each template subdirectory. The
-    project directory can the be built in the current working
-    directory. If the project directory and any subdirectories alredy
-    exist, they are simply populate with the necessary files. If a
-    file already exists, no action is taken, and a notification is
-    displayed.
+    project directory can then be built in the current working
+    directory. If the project directory and any subdirectories
+    already exist, they are simply populate with the necessary files.
+    If a file already exists, no action is taken, and a notification
+    is displayed.
     """
 
     def __init__(self, res_path):
@@ -92,7 +92,7 @@ class ProjDirMaker:
           None.
 
         User is queried about which template files are to be used and
-        there are stored as paths in the self.selections member
+        these are stored as paths in the self.selections member
         variable referenced versus their file keys set in the
         FILE_KEYS object of the json file.
         """
@@ -180,7 +180,7 @@ class ProjDirMaker:
             except ValueError:
                 sys.stderr.write("Invalid selection\n")
                 attempt += 1
-# Selecting 0 means user wants to exit.
+        # Selecting 0 means user wants to exit.
         if(selection_valid and (selection == 0)):
             selection_valid = False
         # Subtract 1 so that the indices are correct.
@@ -200,8 +200,8 @@ class ProjDirMaker:
         subdirectory already exists, it is simply populated. If a
         subdirectory does not exist, it is created and then
         populated. If a file exists, nothing is done. If a file does
-        not exist and hase a template, the template is copied to the
-        given subdirectory. If the file does not exist, and ther is
+        not exist and has a template, the template is copied to the
+        given subdirectory. If the file does not exist, and there is
         no template, an empty file is created.
         """
         for json_key in dir_struct:
