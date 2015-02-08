@@ -1,0 +1,25 @@
+
+{
+  "FILE_KEYS": {
+    "LaTeX_MainTemplates": "main.tex",
+    "BibTeX_ReferenceTemplates": "references.bib",
+    "BibTeX_StyleTemplates": "refstyle.bst"
+  },
+
+  "DIR_STRUCT": {
+    "FILES": [],
+    "tex": {
+      "FILES": ["main.tex"],
+      "sec": {
+        "FILES": [],
+        "scratch": {"FILES": []}
+      },
+      "ref": {
+        "FILES": ["references.bib", "refstyle.bst"]
+      },
+      "img": {"FILES": []}
+    },
+    "build": {"FILES": []},
+    "design": {"FILES": []}
+  }
+}

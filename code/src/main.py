@@ -6,7 +6,7 @@ import shutil
 import json
 
 # Location of the resource directory from the home directory.
-MPD_RESDIR_FROM_HOME = "/Documents/computing/python/projects/MPD/code/test/res/"
+MPD_RESDIR_FROM_HOME = "/Documents/computing/python/projects/MPD/code/test/LaTeX/"
 ####################################################################
 
 class ProjDirMaker:
