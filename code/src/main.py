@@ -196,12 +196,13 @@ class ProjDirMaker:
                 attempt += 1
         return selection, selection_valid
 
-    def __populate(self, cur_dir_path, dir_struct):
+    def __populate(self, cur_dir_path, dir_struct, level=0):
         """Populate a directory according to a directory layout.
 
         Args:
           cur_dir_path (string): Path to the directory to populate.
           dir_struct (dict): Subdir name keys, subdir layout vals.
+          level (int, default 0): Subdir level.
 
         Returns:
           None.
@@ -211,24 +212,26 @@ class ProjDirMaker:
         subdirectory does not exist, it is created and then
         populated. If a file exists, nothing is done. If a file does
         not exist and has a template, the template is copied to the
-        given subdirectory. If the file does not exist, and there is
-        no template, an empty file is created.
+        given subdirectory. If the template is the key "NO_TEMPLATE",
+        then no file is created. If the file does not exist, and
+        there is no template, an empty file is created.
         """
         for json_key in dir_struct:
+            indent = "    " * level
             if(type(dir_struct[json_key]) == type(dict())):
                 # These are the directories to create.
                 new_dir_path = os.path.join(cur_dir_path, json_key)
                 if(not os.path.exists(new_dir_path)):
                     try:
                         os.mkdir(new_dir_path)
-                        message = "Directory \"";
+                        message = indent + "Directory \"";
                         message += os.path.basename(new_dir_path)
-                        message += "\" created.\n"
+                        message += "\" created\n"
                         sys.stdout.write(message)
                     except:
                         print(sys.exc.info())
                         sys.exit("Cannot create subdirectories!")
-                self.__populate(new_dir_path, dir_struct[json_key])
+                self.__populate(new_dir_path, dir_struct[json_key], level + 1)
             elif(type(dir_struct[json_key]) == type(list())):
                 # These are the files to create.
                 if(len(dir_struct[json_key]) != 0):
@@ -237,8 +240,8 @@ class ProjDirMaker:
                         new_file_path = os.path.join(cur_dir_path, new_file)
                         if(os.path.exists(new_file_path)):
                         # File already exists, so leave it alone.
-                            message = "    File \"" + new_file
-                            massage += "\" already exists.\n"
+                            message = indent + "File \"" + new_file
+                            massage += "\" already exists\n"
                             sys.stdout.write(message)
                             continue
                         elif(new_file in self.selections):
@@ -247,7 +250,7 @@ class ProjDirMaker:
                                 shutil.copy(
                                     self.selections[new_file],
                                     os.path.join(cur_dir_path, new_file))
-                                message = "    File \"" + new_file
+                                message = indent + "File \"" + new_file
                                 message += "\" created from template "
                                 message += os.path.basename(
                                                self.selections[new_file])
@@ -260,8 +263,8 @@ class ProjDirMaker:
                         # Create a new empty file.
                             try:
                                 open(new_file_path, 'a').close()
-                                message = "    New file \""
-                                message += new_file + "\" created.\n"
+                                message = indent + "New file \""
+                                message += new_file + "\" created\n"
                                 sys.stdout.write(message)
                             except:
                                 print(sys.exc_info())
