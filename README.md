@@ -74,6 +74,7 @@ If the user selects `JournalXDoc.tex` for `main.tex`, `Complete.bib` for `refere
 MyNewProject/
 |   tex/
 |   |   sec/
+|   |   |   scratch/
 |   |   |   sectionone.tex          # new, empty file
 |   |   ref/
 |   |   |   references.tex          # copy of Complete.bib
