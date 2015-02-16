@@ -1,25 +1,24 @@
-
 {
-  "FILE_KEYS": {
-    "LaTeX_MainTemplates": "main.tex",
-    "BibTeX_ReferenceTemplates": "references.bib",
-    "BibTeX_StyleTemplates": "refstyle.bst"
+    "FILE_KEYS": {
+        "LaTeX_MainTemplates": "main.tex",
+        "BibTeX_ReferenceTemplates": "references.bib",
+        "BibTeX_StyleTemplates": "refstyle.bst"
   },
 
-  "DIR_STRUCT": {
-    "FILES": [],
-    "tex": {
-      "FILES": ["main.tex"],
-      "sec": {
+    "DIR_STRUCT": {
         "FILES": [],
-        "scratch": {"FILES": []}
-      },
-      "ref": {
-        "FILES": ["references.bib", "refstyle.bst"]
-      },
-      "img": {"FILES": []}
-    },
-    "build": {"FILES": []},
-    "design": {"FILES": []}
-  }
+        "tex": {
+            "FILES": ["LaTeX_MainTemplates"],
+            "sec": {
+                "FILES": ["sectionone.tex"],
+                "scratch": {"FILES": []}
+            },
+            "ref": {
+                "FILES": ["BibTeX_ReferenceTemplates", "BibTeX_StyleTemplates"]
+            },
+            "img": {"FILES": []}
+        },
+        "build": {"FILES": []},
+        "design": {"FILES": []}
+    }
 }
