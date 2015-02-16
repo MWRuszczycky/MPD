@@ -88,7 +88,6 @@ MyNewProject/
 ## Issues/To Do
   * Port to Windows
   * Allow user to choose from different project directories, so a different script is not required for each project type
-  * Allow different templates to have the same name in the project directory (e.g., CMakeLists.txt files)
   * Improve checking for poorly formatted JSON files
 
 ## Requirements
