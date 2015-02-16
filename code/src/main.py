@@ -45,8 +45,8 @@ class ProjDirMaker:
                     sys.exit("No FILE_KEYS object in json file!")
                 if(not "DIR_STRUCT" in json_file_dict):
                     sys.exit("No DIR_STRUCT object in json file!")
-                # Dict associates template dirs with file keys
-                self.file_keys = json_file_dict["FILE_KEYS"]
+                # Dict associates template dirs with file names
+                self.file_names = json_file_dict["FILE_KEYS"]
                 # Dict describes the structure of the dir to be made
                 self.dir_struct = json_file_dict["DIR_STRUCT"]
             else:
@@ -93,9 +93,9 @@ class ProjDirMaker:
 
         User is queried about which template files are to be used and
         these are stored as paths in the self.selections member
-        variable referenced versus their file keys set in the
-        FILE_KEYS object of the json file. If user skips a template
-        the key "NO_TEMPLATE" is used.
+        variable referenced versus their template directory names
+        as the keys. If user skips a template the value "NO_TEMPLATE"
+        is used.
         """
         self.selections = {}
         for temp_dir in self.temp_dirs:
@@ -103,19 +103,16 @@ class ProjDirMaker:
             temp_files = [x for x in os.listdir(temp_path)
                           if os.path.isfile(os.path.join(temp_path, x))]
             num_files = len(temp_files)
-
-            if(temp_dir in self.file_keys and num_files > 0):
+            if(temp_dir in self.file_names and num_files > 0):
                 self.__disp_menu(temp_files, temp_dir)
                 selection, valid = self.__query_selection(num_files)
                 if(not valid or selection < 0):
                     sys.exit("No project built.")
                 elif(selection == 0):
-                    self.selections[
-                        self.file_keys[temp_dir]] = "NO_TEMPLATE"
+                    self.selections[temp_dir] = "NO_TEMPLATE"
                 else:
                     selection -= 1
-                    self.selections[
-                        self.file_keys[temp_dir]] =\
+                    self.selections[temp_dir] =\
                             os.path.join(temp_path, temp_files[selection])
 
     def create(self, proj_name):
@@ -148,7 +145,7 @@ class ProjDirMaker:
           None.
         """
         header_str = "Choose template for "
-        header_str += self.file_keys[temp_dir] + " in the "
+        header_str += self.file_names[temp_dir] + " in the "
         header_str += temp_dir + " directory.\n"
         sys.stdout.write(header_str)
         for i, n in enumerate(temp_file_list):
@@ -212,7 +209,7 @@ class ProjDirMaker:
         subdirectory does not exist, it is created and then
         populated. If a file exists, nothing is done. If a file does
         not exist and has a template, the template is copied to the
-        given subdirectory. If the template is the key "NO_TEMPLATE",
+        given subdirectory. If the template path is "NO_TEMPLATE",
         then no file is created. If the file does not exist, and
         there is no template, an empty file is created.
         """
@@ -242,19 +239,23 @@ class ProjDirMaker:
                 if(len(dir_struct[json_key]) != 0):
                     for new_file in dir_struct[json_key]:
                         # These are new files.
-                        new_file_path = os.path.join(cur_dir_path, new_file)
+                        if(new_file in self.file_names):
+                            new_file_name = self.file_names[new_file]
+                        else:
+                            new_file_name = new_file
+                        new_file_path = os.path.join(cur_dir_path,
+                                                     new_file_name)
                         if(os.path.exists(new_file_path)):
                         # File already exists, so leave it alone.
-                            message = indent + "File \"" + new_file
+                            message = indent + "File \"" + new_file_name
                             message += "\" already exists (no overwrite)\n"
                             sys.stdout.write(message)
                         elif(new_file in self.selections):
                         # File is new and has a template.
                             if(self.selections[new_file] != "NO_TEMPLATE"):
-                                shutil.copy(
-                                    self.selections[new_file],
-                                    os.path.join(cur_dir_path, new_file))
-                                message = indent + "File \"" + new_file
+                                shutil.copy(self.selections[new_file],
+                                            new_file_path)
+                                message = indent + "File \"" + new_file_name
                                 message += "\" created from template "
                                 message += os.path.basename(
                                                self.selections[new_file])
