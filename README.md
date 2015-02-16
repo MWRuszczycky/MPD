@@ -29,31 +29,31 @@ The location of the resource directory from the user's home directory is set by 
 
 ### The JSON File
 
-The JSON file (e.g., `LaTeX.json`) has two objects. The first, named `FILE_KEYS`, maps the template directories to template file keys. The second, named `DIR_STRUCT`, describes the structure of the project directory. Each subdirectory is just an object, the members of which are either arrays or more subdirectory objects. Files in each subdirectory are named in an array named `FILES`. This array is left empty if there are no files. File names in the array are replaced by the templates as per the `FILE_KEYS` object. If a file name is present that does not map to a template (e.g., the `sectionone.tex` file below), an empty file with that name is created. For example, the `LaTeX.json` file from above could have the form:
+The JSON file (e.g., `LaTeX.json`) has two objects. The first, named `FILE_KEYS`, maps the template directories to template file names. The second, named `DIR_STRUCT`, describes the structure of the project directory. Each subdirectory is just an object, the members of which are either arrays or more subdirectory objects. Files in each subdirectory are named in an array named `FILES`. This array is left empty if there are no files. File names in the array are replaced by the templates as per the directory they are found in. Their names are replaced by the name given in the `FILE_KEYS` object. If a file name is present that does not map to a template (e.g., the `sectionone.tex` file below), an empty file with that name is created. For example, the `LaTeX.json` file from above could have the form:
 ```json
 {
-  "FILE_KEYS": {
-    "LaTeX_MainTemplates": "main.tex",
-    "BibTeX_ReferenceTemplates": "references.bib",
-    "BibTeX_StyleTemplates": "refstyle.bst"
+    "FILE_KEYS": {
+        "LaTeX_MainTemplates": "main.tex",
+        "BibTeX_ReferenceTemplates": "references.bib",
+        "BibTeX_StyleTemplates": "refstyle.bst"
   },
 
-  "DIR_STRUCT": {
-    "FILES": [],
-    "tex": {
-      "FILES": ["main.tex"],
-      "sec": {
-        "FILES": ["sectionone.tex"],
-        "scratch": {"FILES": []}
-      },
-      "ref": {
-        "FILES": ["references.bib", "refstyle.bst"]
-      },
-      "img": {"FILES": []}
-    },
-    "build": {"FILES": []},
-    "design": {"FILES": []}
-  }
+    "DIR_STRUCT": {
+        "FILES": [],
+        "tex": {
+            "FILES": ["LaTeX_MainTemplates"],
+            "sec": {
+                "FILES": ["sectionone.tex"],
+                "scratch": {"FILES": []}
+            },
+            "ref": {
+                "FILES": ["BibTeX_ReferenceTemplates", "BibTeX_StyleTemplates"]
+            },
+            "img": {"FILES": []}
+        },
+        "build": {"FILES": []},
+        "design": {"FILES": []}
+    }
 }
 ```
 
