@@ -9,9 +9,11 @@ import json
 MPD_RESDIR_FROM_HOME = "/Documents/computing/python/projects/MPD/code/test/res/"
 ####################################################################
 
-class ResDirLocator:
+class ProjTempDirLocator:
+    """Facilitates selection of the project template directory."""
 
     def __init__(self, res_path):
+        """Sets path to the resource directory."""
         self.res_path = res_path
         try:
             self.template_dirs = [x for x in os.listdir(res_path)
@@ -23,14 +25,41 @@ class ResDirLocator:
             sys.exit(1)
 
     def get_template_dir(self):
+        """Queries user for project type and returns the response.
+        
+        Args:
+          None.
+
+        Returns:
+          dirpath (string): Absolute path to the proj. template dir.
+          quit_flag (bool): Indicates whether the script should quit.
+
+        The quit_flag will be set to True if the user chooses to quit
+        or there is an error. If the quit_flag is set to true, then
+        dirpath will contain an empty string.
+        """
         self.__disp_menu()
         selection_index, quit_flag = self.__query_user()
         dirpath = ""
         if not quit_flag:
-            dirpath = os.path.join(self.res_path, self.template_dirs[selection_index])
+            dirpath = os.path.join(self.res_path,
+                                   self.template_dirs[selection_index])
         return dirpath, quit_flag
 
     def __query_user(self):
+        """Prompts the user for selecting a project temp. dir.
+            
+        Args:
+          None.
+
+        Returns:
+          selection - 1 (int): Index of the project temp. dir.
+          quit_flag (bool): Indicates whether script should quit.
+
+        Attempts three times to get a valid selection before giving
+        up. If the quit_flag is true, then selection -1 will be equal
+        to -1.
+        """
         attempt = 0
         quit_flag = False
         max_selection = len(self.template_dirs)
@@ -42,21 +71,23 @@ class ResDirLocator:
                     selection = int(response)
                 else:
                     quit_flag = True
-                    selection = -1
                     break
                 if(selection > max_selection or selection < 1):
                     sys.stderr.write("Invalid selection\n")
+                    selection = 0
                     attempt += 1
                 else:
                     break
             except ValueError:
                 sys.stderr.write("Invalid selection\n")
+                selection = 0
                 attempt += 1
             if attempt >= 3:
                 quit_flag = True
         return selection - 1, quit_flag
 
     def __disp_menu(self):
+        """Displays menu of the proj. temp. dirs. to choose from."""
         sys.stdout.write("Choose project type.\n")
         for i, n in enumerate(self.template_dirs):
             sys.stdout.write("    " + str(i + 1) + ": " + n + "\n")
@@ -344,7 +375,7 @@ if __name__ == "__main__":
     str_list = [os.path.expanduser("~"), MPD_RESDIR_FROM_HOME]
     mpd_resdir = "".join(str_list)
 
-    template_locator = ResDirLocator(mpd_resdir)
+    template_locator = ProjTempDirLocator(mpd_resdir)
     template_res_dir, quit = template_locator.get_template_dir()
     if quit:
         sys.exit(0)
