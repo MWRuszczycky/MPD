@@ -6,8 +6,62 @@ import shutil
 import json
 
 # Location of the resource directory from the home directory.
-MPD_RESDIR_FROM_HOME = "/Documents/computing/python/projects/MPD/code/test/LaTeX/"
+MPD_RESDIR_FROM_HOME = "/Documents/computing/python/projects/MPD/code/test/res/"
 ####################################################################
+
+class ResDirLocator:
+
+    def __init__(self, res_path):
+        self.res_path = res_path
+        try:
+            self.template_dirs = [x for x in os.listdir(res_path)
+                                  if os.path.isdir(os.path.join(res_path, x))]
+        except FileNotFoundError:
+            sys.exit("Cannot find resource directory!")
+        except Exception as e:
+            print(sys.exc_info())
+            sys.exit(1)
+
+    def get_template_dir(self):
+        self.__disp_menu()
+        selection_index, quit_flag = self.__query_user()
+        dirpath = ""
+        if not quit_flag:
+            dirpath = os.path.join(self.res_path, self.template_dirs[selection_index])
+        return dirpath, quit_flag
+
+    def __query_user(self):
+        attempt = 0
+        quit_flag = False
+        max_selection = len(self.template_dirs)
+        while attempt < 3:
+            try:
+                response = input("Selection: ")
+                selection = 0
+                if(response != "q"):
+                    selection = int(response)
+                else:
+                    quit_flag = True
+                    selection = -1
+                    break
+                if(selection > max_selection or selection < 1):
+                    sys.stderr.write("Invalid selection\n")
+                    attempt += 1
+                else:
+                    break
+            except ValueError:
+                sys.stderr.write("Invalid selection\n")
+                attempt += 1
+            if attempt >= 3:
+                quit_flag = True
+        return selection - 1, quit_flag
+
+    def __disp_menu(self):
+        sys.stdout.write("Choose project type.\n")
+        for i, n in enumerate(self.template_dirs):
+            sys.stdout.write("    " + str(i + 1) + ": " + n + "\n")
+        sys.stdout.write("    q: Quit\n")
+        sys.stdout.flush()
 
 class ProjDirMaker:
     """Generates a project directory based on a set of templates.
@@ -52,7 +106,7 @@ class ProjDirMaker:
             else:
                 sys.exit("Too many resource json files!")
         except FileNotFoundError:
-            sys.exit("Cannot find resource directory!")
+            sys.exit("Cannot find template directory!")
         except Exception as e:
             print(sys.exc_info())
             sys.exit("Failed to read json file!")
@@ -283,7 +337,12 @@ if __name__ == "__main__":
     str_list = [os.path.expanduser("~"), MPD_RESDIR_FROM_HOME]
     mpd_resdir = "".join(str_list)
 
-    proj_maker = ProjDirMaker(mpd_resdir)
+    template_locator = ResDirLocator(mpd_resdir)
+    template_res_dir, quit = template_locator.get_template_dir()
+    if quit:
+        sys.exit(0)
+
+    proj_maker = ProjDirMaker(template_res_dir)
     proj_maker.set_selections()
     proj_name = proj_maker.query_proj_name()
     proj_maker.create(proj_name)
