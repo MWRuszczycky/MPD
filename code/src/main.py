@@ -17,7 +17,7 @@ class ResDirLocator:
             self.template_dirs = [x for x in os.listdir(res_path)
                                   if os.path.isdir(os.path.join(res_path, x))]
         except FileNotFoundError:
-            sys.exit("Cannot find resource directory!")
+            sys.exit("Cannot find resource directory.")
         except Exception as e:
             print(sys.exc_info())
             sys.exit(1)
@@ -90,26 +90,34 @@ class ProjDirMaker:
             # List of the template subdirectories.
             self.temp_dirs = [x for x in os.listdir(res_path)
                               if os.path.isdir(os.path.join(res_path, x))]
-            # Make sure there is only one file in the resource dir.
-            if(len(res_files) == 1):
-                res_json_file = os.path.join(res_path, res_files[0])
-                with open(res_json_file) as openFile:
-                    json_file_dict = json.load(openFile)
-                if(not "FILE_KEYS" in json_file_dict):
-                    sys.exit("No FILE_KEYS object in json file!")
-                if(not "DIR_STRUCT" in json_file_dict):
-                    sys.exit("No DIR_STRUCT object in json file!")
-                # Dict associates template dirs with file names
-                self.file_names = json_file_dict["FILE_KEYS"]
-                # Dict describes the structure of the dir to be made
-                self.dir_struct = json_file_dict["DIR_STRUCT"]
-            else:
-                sys.exit("Too many resource json files!")
         except FileNotFoundError:
-            sys.exit("Cannot find template directory!")
-        except Exception as e:
-            print(sys.exc_info())
-            sys.exit("Failed to read json file!")
+            sys.exit("Cannot find template directory.")
+        # Make sure there is only one file in the resource dir.
+        if(len(res_files) == 1):
+            res_json_file = os.path.join(res_path, res_files[0])
+            with open(res_json_file) as openFile:
+                try:
+                    json_file_dict = json.load(openFile)
+                except:
+                    sys.stderr.write("The json layout file contains one")
+                    sys.stderr.write(" or more errors and\ncannot be read.\n")
+                    sys.exit(1)
+            if(not "FILE_KEYS" in json_file_dict):
+                sys.exit("No FILE_KEYS object in json file.")
+            if(not "DIR_STRUCT" in json_file_dict):
+                sys.exit("No DIR_STRUCT object in json file.")
+            # Dict associates template dirs with file names
+            self.file_names = json_file_dict["FILE_KEYS"]
+            # Dict describes the structure of the dir to be made
+            self.dir_struct = json_file_dict["DIR_STRUCT"]
+        elif(len(res_files) < 1):
+            sys.exit("Cannot find a (json) file describing the project layout.")
+        else:
+            sys.stderr.write("The template directory can only contain one")
+            sys.stderr.write(" file. This\nfile must contain the json")
+            sys.stderr.write(" describing the project layout.\nAll other")
+            sys.stderr.write(" contents must be directories (see README.md).\n")
+            sys.exit(1)
         self.res_path = res_path
 
     def query_proj_name(self):
@@ -182,8 +190,7 @@ class ProjDirMaker:
             try:
                 os.mkdir(proj_name)
             except:
-                print(sys.exc_info())
-                sys.exit("Cannot create project directory!")
+                sys.exit("Cannot create project directory.")
         proj_path = os.path.join(os.getcwd(), proj_name)
         sys.stdout.write("******\n")
         self.__populate(proj_path, self.dir_struct)
@@ -281,7 +288,7 @@ class ProjDirMaker:
                         sys.stdout.write(message)
                     except:
                         print(sys.exc.info())
-                        sys.exit("Cannot create subdirectories!")
+                        sys.exit("Cannot create subdirectories.")
                 else:
                     message = indent + "Directory \""
                     message += os.path.basename(new_dir_path)
